@@ -1408,8 +1408,22 @@ public:
             cpu.initialize();
         }
 
+        unsigned long long sum = 0;
+        double latency_ave_99 = 0;
+        double latency_ave_9999 = 0;
+        for (unsigned long long i=0; i < count; i++) {
+            sum += _latency_history[i];
+            if (i == count*99/100) {
+                latency_ave_99 = sum/i;
+            } else if (i == (unsigned long long)(count*(9999.0/10000))) {
+                latency_ave_9999 = sum/i;
+            }
+        }
+
         printf("Length: %5d"
                " Latency: Ave %6.0lf " PERFT_TIME_UNIT
+               " Ave(99%%) %6.0lf " PERFT_TIME_UNIT
+               " Ave(99.99%%) %6.0lf " PERFT_TIME_UNIT
                " Std %6.1lf " PERFT_TIME_UNIT
                " Min %6lu " PERFT_TIME_UNIT
                " Max %6lu " PERFT_TIME_UNIT
@@ -1420,7 +1434,12 @@ public:
                " 99.9999%% %6lu " PERFT_TIME_UNIT
                " %s\n",
                 totalSampleSize,
-                latency_ave, latency_std, latency_min, latency_max,
+                latency_ave,
+                latency_ave_99,
+                latency_ave_9999,
+                latency_std,
+                latency_min,
+                latency_max,
                 _latency_history[count*50/100],
                 _latency_history[count*90/100],
                 _latency_history[count*99/100],
